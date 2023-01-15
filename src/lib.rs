@@ -1,16 +1,19 @@
+#![no_std]
+#![forbid(unsafe_code)]
+
 /// Holds a secret that can't be copied/cloned. Automcatically zeroes the memory when dropped.
 ///
 /// NOTE: In the future, this may implement securing the memory containing the secret (via the OS).
 pub struct Secret<const LENGTH: usize> {
-    bytes: Box<[u8; LENGTH]>,
+    bytes: [u8; LENGTH],
 }
 
 impl<const LENGTH: usize> Secret<LENGTH> {
     /// Initialize a secret from the provided buffer, zeroing the provided buffer once the secret has been copied.
     pub fn new(secret: &mut [u8; LENGTH]) -> Self {
-        let mut bytes = Box::new([0u8; LENGTH]);
+        let mut bytes = [0u8; LENGTH];
 
-        std::mem::swap(bytes.as_mut(), secret);
+        core::mem::swap(&mut bytes, secret);
 
         Self { bytes }
     }
